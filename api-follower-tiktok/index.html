@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Follower Count</title>
+    <script>
+       async function updateFollowerCount() {
+    try {
+        const response = await fetch('get_follower_count.php');
+        const data = await response.json();
+        if (data.error) {
+            console.error('Error:', data.error);
+            document.getElementById('followerCount').innerText = 'Error fetching data';
+        } else {
+            document.getElementById('username').innerText = data.username;
+            document.getElementById('followerCount').innerText = data.followerCount;
+        }
+    } catch (error) {
+        console.error('Error fetching follower count:', error);
+        document.getElementById('followerCount').innerText = 'Error fetching data';
+    }
+}
+
+
+        setInterval(updateFollowerCount, 10000); // Update every second
+        window.onload = updateFollowerCount;
+    </script>
+</head>
+<body>
+    <h1>TikTok Follower Count</h1>  
+    <p>Username: <span id="username"></span></p>
+    <p>Follower Count: <span id="followerCount"></span></p>
+</body>
+</html>
