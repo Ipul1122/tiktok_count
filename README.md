@@ -19,25 +19,25 @@ This file contains the HTML structure and JavaScript code to fetch and display t
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TikTok Follower Count</title>
     <script>
-        async function updateFollowerCount() {
-            try {
-                const response = await fetch('get_follower_count.php');
-                const data = await response.json();
-                // console.log('Response data:', data); // Log the response data for debugging
-                if (data.error) {
-                    console.error('Error:', data.error);
-                    document.getElementById('followerCount').innerText = 'Error fetching data';
-                } else {
-                    document.getElementById('username').innerText = data.username;
-                    document.getElementById('followerCount').innerText = data.followerCount;
-                }
-            } catch (error) {
-                console.error('Error fetching follower count:', error);
-                document.getElementById('followerCount').innerText = 'Error fetching data';
-            }
+       async function updateFollowerCount() {
+    try {
+        const response = await fetch('get_follower_count.php');
+        const data = await response.json();
+        if (data.error) {
+            console.error('Error:', data.error);
+            document.getElementById('followerCount').innerText = 'Error fetching data';
+        } else {
+            document.getElementById('username').innerText = data.username;
+            document.getElementById('followerCount').innerText = data.followerCount;
         }
+    } catch (error) {
+        console.error('Error fetching follower count:', error);
+        document.getElementById('followerCount').innerText = 'Error fetching data';
+    }
+}
 
-        setInterval(updateFollowerCount, 10000); // Update every 10 seconds
+
+        setInterval(updateFollowerCount, 10000); // Update every second
         window.onload = updateFollowerCount;
     </script>
 </head>
@@ -72,12 +72,18 @@ function getTikTokFollowerCount($username) {
 
     curl_close($ch);
 
-    // Update the regular expression to match numbers with commas or periods
-    preg_match('/"followerCount":\s*"?([\d,\.]+)"?/', $html, $matches);
-    return $matches[1] ?? ['error' => 'Unable to find follower count in the response'];
+    // Improved regex to extract follower count
+    preg_match('/"followerCount":\s*"?([\d,]+)"?/', $html, $matches);
+    
+    // Check if follower count is found
+    if (empty($matches)) {
+        return ['error' => 'Unable to find follower count in the response'];
+    }
+
+    return $matches[1]; // Return the follower count found
 }
 
-$username = 'pul_ipul_pul'; // USERNAME TIKTOK
+$username = 'pul_ipul_pul'; // TikTok Username
 $result = getTikTokFollowerCount($username);
 
 if (isset($result['error'])) {
